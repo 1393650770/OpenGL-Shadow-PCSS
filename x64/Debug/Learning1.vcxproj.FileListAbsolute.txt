@@ -1,0 +1,3 @@
+D:\OpenGLProject\Learning1\Learning1\x64\Debug\Learning1.exe
+D:\VSCode\HomeWork\OpenGLProject\Learning1\Learning1\x64\Debug\Learning1.exe
+D:\LearnOpenGL\OpenGLProject\Learning1\Learning1\x64\Debug\Learning1.exe
