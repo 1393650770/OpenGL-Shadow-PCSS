@@ -11,7 +11,7 @@ struct Particle
 	Particle():
 		position(utils::gen_random(0.f,1920.f), utils::gen_random(0.f, 1080.f)),
 		velocity(1.f),
-		scale(utils::gen_random(0.1f, 16.f)),
+		scale(utils::gen_random(10.f, 16.f)),
 		mass(2.0f)
 	{
 
@@ -39,10 +39,12 @@ public:
 			particles.push_back(Particle());
 		}
 		init_particle_system(vertexPath, fragmentPath, geometryPath, computePath);
+
 	}
 	virtual ~ParticleSystem();
 	Shader* compute_shader;
 	Shader* render_shader;
+
 	void init_particle_system(const GLchar* vertexPath = nullptr, const GLchar* fragmentPath = nullptr, const char* geometryPath = nullptr, const char* computePath = nullptr);
 	void draw_particle_system(float Runtime);
 	void destroy_particle_system();

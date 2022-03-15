@@ -5,7 +5,7 @@ ParticleSystem::~ParticleSystem()
 	destroy_particle_system();
 }
 
-void ParticleSystem::init_particle_system(const GLchar* vertexPath , const GLchar* fragmentPath , const char* geometryPath , const char* computePath)
+void ParticleSystem::init_particle_system(const GLchar* vertexPath, const GLchar* fragmentPath, const char* geometryPath, const char* computePath)
 {
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -56,45 +56,37 @@ void ParticleSystem::init_particle_system(const GLchar* vertexPath , const GLcha
 			nullptr
 		);
 		render_shader->SetUniform1f("vertex_count", particles.size());
-		render_shader->setMat4("projection", orthographic_perspective(1920.0f,1080.0f, -1.f, 1.f));
+		render_shader->setMat4("projection", orthographic_perspective(1920.0f, 1080.0f, -1.f, 1.f));
 	}
 }
 
 void ParticleSystem::draw_particle_system(float Runtime)
 {
-	 // Invoke Compute Shader and wait for all memory access to SSBO to safely finish
-		compute_shader->use();
-		compute_shader->SetUniform1f("time", Runtime+rand()%100);
-		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
-		glDispatchCompute((particles.size() / 128) + 1, 1, 1);
-		glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT|GL_SHADER_STORAGE_BARRIER_BIT);
+	// Invoke Compute Shader and wait for all memory access to SSBO to safely finish
+	compute_shader->use();
+	compute_shader->SetUniform1f("time", Runtime );
+	compute_shader->SetUniform2f("resolution", 1920.0f, 1080.0f);
+	compute_shader->SetUniform2f("attractor_radii", 400.f, 200.f);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, particle_ssbo);
+	glDispatchCompute((particles.size() / 128) + 1, 1, 1);
+	glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT | GL_SHADER_STORAGE_BARRIER_BIT);
 
-		void* ptr = glMapBuffer(GL_SHADER_STORAGE_BUFFER, GL_READ_WRITE);
-		Particle* tem=new Particle();
-		memcpy(tem, ptr, sizeof(Particle));
-		glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
-		cout << tem->position.x<<" SSBO "<<tem->position.y<<endl;
-		delete tem;
 
 
 	// Render the results
-		render_shader->use();
-		glBindVertexArray(vao);
-
-		void* ptr2 = glMapBuffer(GL_ARRAY_BUFFER, GL_READ_ONLY);
-		Particle* tem2 = new Particle();
-		memcpy(tem2, ptr2, sizeof(Particle));
-		glUnmapBuffer(GL_ARRAY_BUFFER);
-		cout << tem2->position.x << " VBO " << tem2->position.y << endl;
-		delete tem2;
+	render_shader->use();
+	glBindVertexArray(vao);
+	render_shader->SetUniform1f("vertex_count", particles.size());
+	render_shader->setMat4("projection", orthographic_perspective(1920.0f, 1080.0f, -1.f, 1.f));
 
 
-		glPointSize(2.0f);
-		glDrawArraysInstanced(GL_POINTS, 0,1, particles.size());
-		//glDrawArrays(GL_POINTS, 0, particles.size());
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-	
+
+	glPointSize(2.0f);
+	glDrawArraysInstanced(GL_POINTS, 0, 1 ,particles.size());
+	//glDrawArrays(GL_POINTS, 0, particles.size());
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 }
 
 void ParticleSystem::destroy_particle_system()

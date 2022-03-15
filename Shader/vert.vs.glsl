@@ -11,7 +11,7 @@ out float vertex_speed;
 uniform float vertex_count;
 
 void main() {
-	float depth_bias = ((2.0 / vertex_count) * gl_VertexID) - 1.0;
+	float depth_bias = ((1.0 / vertex_count) * gl_VertexID)-0.2;
 	gl_Position = vec4(position, depth_bias, 1.0);
 
 	vertex_scale = scale;
